@@ -18,18 +18,19 @@ $(function(){
 
 
     var octopus = {
-        addNewNote: function(noteStr) {
+        addNewNote: function(noteStr, timeStr) {
             model.add({
+                time: timeStr,
                 content: noteStr
             });
             view.render();
         },
 
         getNotes: function() {
-            return model.getAllNotes();
+            return model.getAllNotes().reverse();
         },
 
-        init: function() {
+        init: function () {
             model.init();
             view.init();
         }
@@ -42,7 +43,7 @@ $(function(){
             var newNoteForm = $('#new-note-form');
             var newNoteContent = $('#new-note-content');
             newNoteForm.submit(function(e){
-                octopus.addNewNote(newNoteContent.val());
+                octopus.addNewNote(newNoteContent.val(), Date.now());
                 newNoteContent.val('');
                 e.preventDefault();
             });
@@ -51,9 +52,17 @@ $(function(){
         render: function(){
             var htmlStr = '';
             octopus.getNotes().forEach(function(note){
-                htmlStr += '<li class="note">'+
+                if (note.time) {
+                    htmlStr += '<li class="note"><div class="note-date">' +
+                        new Date(note.time).toString() + " </div>: " +
                         note.content +
                     '</li>';
+                }
+                else {
+                    htmlStr += '<li class="note">' +
+                        note.content +
+                    '</li>';
+                }
             });
             this.noteList.html( htmlStr );
         }
